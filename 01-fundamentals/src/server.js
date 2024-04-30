@@ -29,10 +29,10 @@ const server = http.createServer((req, res) => {
             email: "john@example.com",
         })
 
-        return res.end("User has been created")
+        return res.writeHead(201).end("User has been created");
     }
 
-    return res.end("Hello World!")
+    return res.writeHead(404).end("Error your request was not found");
 })
 
 server.listen(3333);
