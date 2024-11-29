@@ -6,10 +6,11 @@ class OneToHundredStream extends Readable {
     _read() {
         const i = this.index++
 
-        setTimeout( () => {
+        setTimeout(() => {
             if (i > 10) {
                 this.push(null)
             } else {
+                // Buffer não aceita números então e convertido para string
                 const buf = Buffer.from(String(i))
 
                 this.push(buf);
@@ -18,21 +19,24 @@ class OneToHundredStream extends Readable {
     }
 }
 
-class InverNumberStream extends Transform{
-    _transform(chunk, encoding, callback){
+class InverNumberStream extends Transform {
+    _transform(chunk, encoding, callback) {
         const transformed = Number(chunk.toString()) * -1;
 
         callback(null, Buffer.from(String(transformed)));
     }
 }
 
-class MultiplyByTenStream extends Writable{
-    _write(chunk, encoding, callback){
+class MultiplyByTenStream extends Writable {
+    _write(chunk, encoding, callback) {
         console.log(Number(chunk.toString()) * 10);
         callback()
     }
 }
 
+// new OneToHundredStream()
+//     .pipe(process.stdout)
+
 new OneToHundredStream()
-    .pipe(new InverNumberStream())
+    // .pipe(new InverNumberStream())
     .pipe(new MultiplyByTenStream())
