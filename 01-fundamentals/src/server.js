@@ -1,25 +1,39 @@
 import http from 'node:http';
+import { json } from '../middlewares/json.js';
+import { Database } from '../middlewares/Database.js';
 
-const users = [];
+const PORT = 3333;
 
-const server = http.createServer((req, res) => {
+const DB = new Database();
+
+const server = http.createServer(async (req, res) => {
     const { method, url } = req;
 
-    if (method === "GET" && url === "/users") {
-        return res.setHeader('Content-type', 'application/json').end(JSON.stringify(users))
+    await json(req, res);
+
+    if (method === 'GET' && url === '/users') {
+        const usersResponse = DB.select('users')
+
+        return res.end(JSON.stringify(usersResponse))
     }
 
-    if (method === "POST" && url === "/users") {
-        users.push({
+    if (method === 'POST' && url === '/users') {
+        const { name, email } = req.body
+
+        const newUser = {
             id: 1,
-            name: "John Doe",
-            email: "john@example.com",
-        })
+            name: name,
+            email: email
+        };
 
-        return res.writeHead(201).end("User has been created");
+        DB.insert('users', newUser)
+
+        return res.writeHead(201).end();
     }
 
-    return res.writeHead(404).end("Error your request was not found");
+    return res.writeHead(404).end()
 })
 
-server.listen(3333);
+server.listen(PORT, () => {
+    console.log(`Server is running on localhost:${PORT}`);
+})
