@@ -1,6 +1,7 @@
 import http from 'node:http';
-import { json } from '../middlewares/json.js';
-import { Database } from '../middlewares/Database.js';
+import { randomUUID } from 'node:crypto';
+import { json } from './middlewares/json.js';
+import { Database } from './Database.js';
 
 const PORT = 3333;
 
@@ -12,18 +13,18 @@ const server = http.createServer(async (req, res) => {
     await json(req, res);
 
     if (method === 'GET' && url === '/users') {
-        const usersResponse = DB.select('users')
+        const users = DB.select('users')
 
-        return res.end(JSON.stringify(usersResponse))
+        return res.end(JSON.stringify(users))
     }
 
     if (method === 'POST' && url === '/users') {
         const { name, email } = req.body
 
         const newUser = {
-            id: 1,
-            name: name,
-            email: email
+            id: randomUUID(),
+            name,
+            email
         };
 
         DB.insert('users', newUser)
